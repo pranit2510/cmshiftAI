@@ -466,8 +466,17 @@ export class DesktopMain extends Disposable {
 	 * Supports feature flags for gradual rollout
 	 */
 	private shouldEnableRustFileSystem(environmentService: INativeWorkbenchEnvironmentService): boolean {
-		// Check environment variable for feature flag
-		const envFlag = process.env['CMDSHIFT_RUST_FS'];
+		// Safe environment variable access - check if we're in Node.js context
+		let envFlag: string | undefined;
+		try {
+			// Only access process.env if we're in Node.js context
+			if (typeof process !== 'undefined' && process.env) {
+				envFlag = process.env['CMDSHIFT_RUST_FS'];
+			}
+		} catch {
+			// Ignore errors in browser context
+		}
+
 		if (envFlag === 'false' || envFlag === '0') {
 			return false;
 		}
@@ -532,13 +541,26 @@ export class DesktopMain extends Disposable {
 	 */
 	private trackRustInitialization(success: boolean, details: string, telemetryService: ITelemetryService): void {
 		try {
+			// Safe process access for telemetry
+			let platform = 'unknown';
+			let arch = 'unknown';
+
+			try {
+				if (typeof process !== 'undefined' && process.platform && process.arch) {
+					platform = process.platform;
+					arch = process.arch;
+				}
+			} catch {
+				// Use defaults in browser context
+			}
+
 			// Log to telemetry service when available
 			telemetryService.publicLog('cmdshiftai.rust.initialization', {
 				success,
 				details,
 				timestamp: Date.now(),
-				platform: process.platform,
-				arch: process.arch
+				platform,
+				arch
 			});
 		} catch (error) {
 			// Silently fail telemetry - don't impact main functionality
