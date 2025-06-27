@@ -9,7 +9,17 @@ import { ITelemetryService } from '../../telemetry/common/telemetry.js';
 import { FileSystemProviderCapabilities, IFileAtomicReadOptions, IFileWriteOptions, IStat, FileType } from '../common/files.js';
 import { DiskFileSystemProvider } from './diskFileSystemProvider.js';
 import { IDiskFileSystemProviderOptions } from '../common/diskFileSystemProvider.js';
-import { performance } from 'perf_hooks';
+// Conditional performance import for Node.js environment
+let performance: { now(): number };
+try {
+	// Try to import perf_hooks for Node.js environment
+	performance = require('perf_hooks').performance;
+} catch {
+	// Fallback to browser performance API or basic implementation
+	performance = globalThis.performance || {
+		now: () => Date.now()
+	};
+}
 
 // Import Rust components
 interface IRustFileOperations {
