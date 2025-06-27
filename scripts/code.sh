@@ -17,8 +17,18 @@ function code() {
 	cd "$ROOT"
 
 	if [[ "$OSTYPE" == "darwin"* ]]; then
-		NAME=`node -p "require('./product.json').nameLong"`
-		CODE="./.build/electron/$NAME.app/Contents/MacOS/Electron"
+		# Check if the cmdshiftAI app exists, otherwise fall back to Code - OSS
+		CMDSHIFT_APP="./.build/electron/cmdshiftAI - AI-First Development Platform.app/Contents/MacOS/Electron"
+		CODE_OSS_APP="./.build/electron/Code - OSS.app/Contents/MacOS/Electron"
+
+		if [[ -f "$CMDSHIFT_APP" ]]; then
+			CODE="$CMDSHIFT_APP"
+		elif [[ -f "$CODE_OSS_APP" ]]; then
+			CODE="$CODE_OSS_APP"
+		else
+			NAME=`node -p "require('./product.json').nameLong"`
+			CODE="./.build/electron/$NAME.app/Contents/MacOS/Electron"
+		fi
 	else
 		NAME=`node -p "require('./product.json').applicationName"`
 		CODE=".build/electron/$NAME"

@@ -1,0 +1,17 @@
+cargo:rerun-if-env-changed=DEBUG_GENERATED_CODE
+cargo:rerun-if-env-changed=TYPE_DEF_TMP_PATH
+cargo:rerun-if-env-changed=CARGO_CFG_NAPI_RS_CLI_VERSION
+cargo::rerun-if-env-changed=NAPI_DEBUG_GENERATED_CODE
+cargo::rerun-if-env-changed=NAPI_TYPE_DEF_TMP_FOLDER
+cargo::rerun-if-env-changed=NAPI_FORCE_BUILD_CMDSHIFTAI_CORE
+cargo:rustc-cdylib-link-arg=-Wl
+cargo:rustc-cdylib-link-arg=-undefined
+cargo:rustc-cdylib-link-arg=dynamic_lookup
+cargo:rustc-link-lib=framework=CoreFoundation
+cargo:rustc-link-lib=framework=Security
+cargo:rustc-cfg=feature="macos_perf"
+cargo:rustc-link-lib=framework=Accelerate
+cargo:rustc-env=RUSTFLAGS=-C target-feature=+neon
+cargo:rustc-env=CARGO_PROFILE_RELEASE_LTO=true
+cargo:rustc-env=CARGO_PROFILE_RELEASE_STRIP=symbols
+cargo:warning=Building cmdshiftAI for macos aarch64

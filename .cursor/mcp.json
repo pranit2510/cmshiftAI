@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "cmdshiftai": {
+      "command": "node",
+      "args": ["./cmdshiftai-mcp.js"],
+      "env": {
+        "VSCODE_ROOT": "./vscode"
+      }
+    }
+  }
+}

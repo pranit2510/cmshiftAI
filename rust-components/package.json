@@ -1,0 +1,43 @@
+{
+  "name": "cmdshiftai-core",
+  "version": "1.0.0",
+  "description": "Rust performance components for cmdshiftAI",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "build": "napi build --platform --release",
+    "build:debug": "napi build --platform",
+    "test": "cargo test"
+  },
+  "napi": {
+    "name": "cmdshiftai_core",
+    "triples": {
+      "defaults": true,
+      "additional": [
+        "aarch64-apple-darwin",
+        "x86_64-apple-darwin",
+        "x86_64-pc-windows-msvc",
+        "x86_64-unknown-linux-gnu"
+      ]
+    }
+  },
+  "devDependencies": {
+    "@napi-rs/cli": "^2.16.0"
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "*.node"
+  ],
+  "keywords": [
+    "cmdshiftai",
+    "rust",
+    "napi",
+    "performance",
+    "file-operations"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">= 16"
+  }
+}

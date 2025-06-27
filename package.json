@@ -1,9 +1,9 @@
 {
-  "name": "code-oss-dev",
-  "version": "1.102.0",
+  "name": "cmdshiftai",
+  "version": "1.0.0",
   "distro": "4b888f68839a0c5dc8dd79e00bf18e6670f3cdd7",
   "author": {
-    "name": "Microsoft Corporation"
+    "name": "cmdshiftAI Team"
   },
   "license": "MIT",
   "main": "./out/main.js",
@@ -48,6 +48,9 @@
     "define-class-fields-check": "node build/lib/propertyInitOrderChecker.js && tsc -p src/tsconfig.defineClassFields.json",
     "update-distro": "node build/npm/update-distro.mjs",
     "web": "echo 'npm run web' is replaced by './scripts/code-server' or './scripts/code-web'",
+    "rust:build": "node scripts/build-rust.js",
+    "rust:build:debug": "node scripts/build-rust.js --debug",
+    "rust:build:release": "node scripts/build-rust.js --release",
     "compile-cli": "gulp compile-cli",
     "compile-web": "node ./node_modules/gulp/bin/gulp.js compile-web",
     "watch-web": "node ./node_modules/gulp/bin/gulp.js watch-web",

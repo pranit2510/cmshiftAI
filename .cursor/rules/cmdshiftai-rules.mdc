@@ -1,0 +1,89 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# cmdshiftAI Cursor Rules
+
+## Project Context
+You are working on cmdshiftAI, an AI-first development platform built as an enhanced VS Code fork with Rust performance components. This project aims to achieve 2-10x performance improvements while maintaining 95% VS Code extension compatibility.
+
+## Critical Constraints
+- **Memory Budget**: <150MB baseline (vs VS Code's 200MB)
+- **Startup Time**: <2 seconds (vs VS Code's 2-4s)
+- **Extension Compatibility**: Must maintain 95%+ compatibility
+- **Architecture**: VS Code (TypeScript/Electron) + Rust performance layer via N-API
+
+## Code Requirements
+1. **TypeScript**: Always use strict mode with comprehensive type definitions
+2. **Error Handling**: Every Rust call must have TypeScript fallback to original VS Code implementation
+3. **Performance**: Measure and log all operations for comparison with baseline
+4. **Compatibility**: Never break existing VS Code APIs or extensions
+5. **Memory**: Monitor memory usage, implement cleanup for all resources
+
+## Architecture Patterns
+- **File System**: RustFileSystemProvider extends DiskFileSystemProvider
+- **Services**: Register via VS Code's dependency injection (registerSingleton)
+- **Rust Bridge**: Use N-API with napi and napi-derive
+- **Async Operations**: Use tokio in Rust, maintain VS Code's Promise patterns in TypeScript
+
+## Anti-Patterns to Avoid
+- ❌ Direct modification of core VS Code interfaces
+- ❌ Synchronous Rust operations (always use async)
+- ❌ Memory allocations without cleanup
+- ❌ Breaking changes to public APIs
+- ❌ Ignoring fallback mechanisms
+- ❌ Console.log for production logging (use ILogService)
+
+## File-Specific Rules
+
+### Rust Files (*.rs)
+- Use `#[napi]` attribute for all exported functions
+- Implement proper error handling with Result<T, Error>
+- Use tokio for async operations
+- Prefer zero-copy operations where possible
+
+### TypeScript Files (*.ts)
+- Import types from VS Code interfaces
+- Use dependency injection for services
+- Implement telemetry for all Rust operations
+- Always provide fallback to Node.js implementation
+
+### Build Files
+- Maintain cross-platform compatibility
+- Use cargo for Rust, npm for TypeScript
+- Generate platform-specific binaries (.node files)
+
+## Performance Guidelines
+- **File Reads**: Target 10x improvement (1ms vs 10ms)
+- **File Writes**: Target 5x improvement with atomic operations
+- **Directory Scans**: Use parallel processing, target 10x improvement
+- **Memory Usage**: <5MB overhead for Rust components
+
+## Testing Requirements
+- Unit tests for all Rust functions
+- Integration tests for TypeScript-Rust boundary
+- Performance benchmarks comparing with baseline
+- Extension compatibility tests with top 50 extensions
+
+## Git Commit Standards
+Format: `type(scope): message`
+
+Types:
+- feat: New feature
+- perf: Performance improvement
+- fix: Bug fix
+- refactor: Code restructuring
+- test: Test additions/changes
+- docs: Documentation updates
+- build: Build system changes
+
+Example: `perf(files): implement Rust-based file operations for 10x speed`
+
+## Current Phase Context
+Week 1: Foundation and core Rust integration
+- Day 1: Setup and branding ✓
+- Day 2: File system integration (current)
+- Day 3: Search implementation
+- Day 4: Memory optimization
+- Day 5: Polish and validation

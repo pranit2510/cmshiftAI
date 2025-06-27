@@ -1,0 +1,10 @@
+/Users/pranitsharma/Desktop/CmdShiftAI/vscode/rust-components/target/release/deps/libthread_local-1b5cb08ea20e9bbe.rmeta: /Users/pranitsharma/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thread_local-1.1.9/src/lib.rs /Users/pranitsharma/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thread_local-1.1.9/src/cached.rs /Users/pranitsharma/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thread_local-1.1.9/src/thread_id.rs /Users/pranitsharma/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thread_local-1.1.9/src/unreachable.rs
+
+/Users/pranitsharma/Desktop/CmdShiftAI/vscode/rust-components/target/release/deps/libthread_local-1b5cb08ea20e9bbe.rlib: /Users/pranitsharma/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thread_local-1.1.9/src/lib.rs /Users/pranitsharma/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thread_local-1.1.9/src/cached.rs /Users/pranitsharma/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thread_local-1.1.9/src/thread_id.rs /Users/pranitsharma/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thread_local-1.1.9/src/unreachable.rs
+
+/Users/pranitsharma/Desktop/CmdShiftAI/vscode/rust-components/target/release/deps/thread_local-1b5cb08ea20e9bbe.d: /Users/pranitsharma/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thread_local-1.1.9/src/lib.rs /Users/pranitsharma/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thread_local-1.1.9/src/cached.rs /Users/pranitsharma/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thread_local-1.1.9/src/thread_id.rs /Users/pranitsharma/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thread_local-1.1.9/src/unreachable.rs
+
+/Users/pranitsharma/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thread_local-1.1.9/src/lib.rs:
+/Users/pranitsharma/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thread_local-1.1.9/src/cached.rs:
+/Users/pranitsharma/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thread_local-1.1.9/src/thread_id.rs:
+/Users/pranitsharma/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thread_local-1.1.9/src/unreachable.rs:

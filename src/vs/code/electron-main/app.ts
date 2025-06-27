@@ -160,6 +160,12 @@ export class CodeApplication extends Disposable {
 
 	private configureSession(): void {
 
+		// Safety check: ensure environmentMainService is available
+		if (!this.environmentMainService) {
+			this.logService?.warn('environmentMainService is undefined in configureSession, skipping session configuration');
+			return;
+		}
+
 		//#region Security related measures (https://electronjs.org/docs/tutorial/security)
 		//
 		// !!! DO NOT CHANGE without consulting the documentation !!!

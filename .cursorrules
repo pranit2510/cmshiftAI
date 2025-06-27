@@ -1,0 +1,119 @@
+# cmdshiftAI Cursor Rules
+
+## Project Context
+You are working on cmdshiftAI, an AI-first development platform built as an enhanced VS Code fork with Rust performance components. This project aims to achieve 2-10x performance improvements while maintaining 95% VS Code extension compatibility.
+
+## Performance Targets
+- **Startup Time**: <2 seconds (vs VS Code's 2-4s)
+- **Memory Usage**: <150MB baseline (vs VS Code's 200MB)
+- **File Read (1MB)**: 1ms (10x faster than VS Code)
+- **File Write**: 4ms (5x faster than VS Code)
+- **Directory Scan (10k files)**: 50ms (10x faster than VS Code)
+- **Search (regex, 1GB)**: 500ms (10x faster than VS Code)
+- **Rust Overhead**: <5MB
+
+## Architecture
+cmdshiftAI uses a three-layer architecture:
+1. **Presentation Layer**: VS Code's TypeScript/Electron UI
+2. **Performance Layer**: Rust components via N-API for I/O operations
+3. **Intelligence Layer**: MCP integration for AI capabilities
+
+## Code Standards
+
+### TypeScript Requirements
+- Use strict mode with comprehensive type definitions
+- No `any` types allowed
+- Every Rust call must have TypeScript fallback to original VS Code implementation
+- Use VS Code's dependency injection (registerSingleton)
+- Import types from VS Code interfaces
+- Use ILogService for logging (no console.log in production)
+
+### Rust Requirements
+- Use `#[napi]` attribute for all exported functions
+- Implement proper error handling with Result<T, Error>
+- Use tokio for all async operations
+- Prefer zero-copy operations
+- Always use async operations (no synchronous blocking)
+
+### Performance Requirements
+- Measure and log all operations for comparison with baseline
+- Memory cleanup for all resources
+- Target specific performance improvements:
+  - File reads: 10x improvement
+  - File writes: 5x improvement  
+  - Directory scans: 10x improvement
+  - Memory usage: <5MB overhead for Rust components
+
+## Development Patterns
+
+### Fallback Pattern (MANDATORY)
+```typescript
+async performOperation(input: string): Promise<Result> {
+    if (this.rustBridge?.isAvailable()) {
+        try {
+            const result = await this.rustBridge.operation(input);
+            this.telemetryService.log('rust.success', { op: 'operation' });
+            return result;
+        } catch (e) {
+            this.logService.warn('Rust operation failed, using fallback', e);
+            this.telemetryService.log('rust.fallback', { op: 'operation' });
+        }
+    }
+    return this.nodeImplementation(input);
+}
+```
+
+### Service Registration Pattern
+```typescript
+registerSingleton(IFileService, RustFileService, InstantiationType.Eager);
+```
+
+## Anti-Patterns to Avoid
+- ❌ Direct modification of core VS Code interfaces
+- ❌ Synchronous Rust operations
+- ❌ Memory allocations without cleanup
+- ❌ Breaking changes to public APIs
+- ❌ Ignoring fallback mechanisms
+- ❌ Console.log for production logging
+
+## File Organization
+- Rust components: `/rust-components/`
+- VS Code modifications: Follow existing VS Code structure
+- Performance tests: `/scripts/validate-performance.js`
+- Build scripts: `/scripts/build-rust.js`
+
+## Testing Requirements
+- Unit tests for all Rust functions
+- Integration tests for TypeScript-Rust boundary
+- Performance benchmarks comparing with baseline
+- Extension compatibility tests with top 50 extensions
+- Always validate against performance targets
+
+## Git Commit Standards
+Format: `type(scope): message`
+
+Types:
+- feat: New feature
+- perf: Performance improvement
+- fix: Bug fix
+- refactor: Code restructuring
+- test: Test additions/changes
+- docs: Documentation updates
+- build: Build system changes
+
+Example: `perf(files): implement Rust-based file operations for 10x speed`
+
+## Current Phase
+Week 1: Foundation and core Rust integration
+- Day 1: Setup and branding ✓
+- Day 2: File system integration (current)
+- Day 3: Search implementation
+- Day 4: Memory optimization
+- Day 5: Polish and validation
+
+## Important Reminders
+1. **Always maintain VS Code compatibility** - 95% of extensions must work
+2. **Performance is the key differentiator** - Every operation must be measurably faster
+3. **Fallbacks are mandatory** - Never ship without Node.js fallbacks
+4. **Measure everything** - Use the PerformanceMonitor for all operations
+5. **Think about memory** - Stay under 150MB baseline usage

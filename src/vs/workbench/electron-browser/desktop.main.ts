@@ -64,6 +64,7 @@ import { mainWindow } from '../../base/browser/window.js';
 import { DefaultAccountService, IDefaultAccountService } from '../services/accounts/common/defaultAccount.js';
 import { AccountPolicyService } from '../services/policies/common/accountPolicyService.js';
 import { MultiplexPolicyService } from '../services/policies/common/multiplexPolicyService.js';
+import { ITelemetryService } from '../../platform/telemetry/common/telemetry.js';
 
 export class DesktopMain extends Disposable {
 
@@ -253,9 +254,38 @@ export class DesktopMain extends Disposable {
 		const remoteAuthorityResolverService = new RemoteAuthorityResolverService(productService, new ElectronRemoteResourceLoader(environmentService.window.id, mainProcessService, fileService));
 		serviceCollection.set(IRemoteAuthorityResolverService, remoteAuthorityResolverService);
 
-		// Local Files
+		// Local Files - Enhanced with Rust performance components
 		const diskFileSystemProvider = this._register(new DiskFileSystemProvider(mainProcessService, utilityProcessWorkerWorkbenchService, logService, loggerService));
 		fileService.registerProvider(Schemas.file, diskFileSystemProvider);
+
+		// cmdshiftAI: Try to use RustFileSystemProvider for enhanced performance
+		try {
+			// Check if telemetry service is available (will be registered later in the service collection)
+			const telemetryService: ITelemetryService = { // Temporary stub until actual service is available
+				publicLog2: () => { },
+				publicLog: () => { },
+				publicLogError: () => { },
+				publicLogError2: () => { },
+				setExperimentProperty: () => { },
+				telemetryLevel: 0,
+				sessionId: '',
+				machineId: '',
+				sqmId: '',
+				devDeviceId: '',
+				firstSessionDate: '',
+				sendErrorTelemetry: false,
+				_serviceBrand: undefined
+			} as ITelemetryService;
+
+			const { RustFileSystemProvider } = await import('../../platform/files/node/rustFileSystemProvider.js');
+			const rustFileSystemProvider = this._register(new RustFileSystemProvider(logService, telemetryService));
+
+			// Replace the file scheme provider with our enhanced version
+			fileService.registerProvider(Schemas.file, rustFileSystemProvider);
+			logService.info('[cmdshiftAI] Successfully registered RustFileSystemProvider for enhanced file operations');
+		} catch (error) {
+			logService.warn('[cmdshiftAI] Failed to register RustFileSystemProvider, using standard DiskFileSystemProvider:', error instanceof Error ? error.message : String(error));
+		}
 
 		// URI Identity
 		const uriIdentityService = new UriIdentityService(fileService);
