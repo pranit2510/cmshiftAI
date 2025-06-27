@@ -1,4 +1,8 @@
 #!/usr/bin/env node
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) cmdshiftAI Team. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 const { spawn } = require('child_process');
 const path = require('path');
@@ -37,7 +41,7 @@ if (!platform) {
 async function runCommand(command, args, options = {}) {
     return new Promise((resolve, reject) => {
         console.log(`Running: ${command} ${args.join(' ')}`);
-        
+
         const proc = spawn(command, args, {
             stdio: 'inherit',
             cwd: RUST_DIR,
@@ -78,7 +82,7 @@ async function installRustTarget() {
 
 async function buildRust() {
     const args = ['build', '--target', platform.target];
-    
+
     if (BUILD_MODE === 'release') {
         args.push('--release');
     }
@@ -110,7 +114,7 @@ async function copyBinary() {
 
 async function generateTypeDefinitions() {
     console.log('Generating TypeScript definitions...');
-    
+
     const indexDts = `export declare class CmdShiftAI {
     constructor();
     getVersion(): Promise<string>;
@@ -276,7 +280,7 @@ async function main() {
         await buildRust();
         await copyBinary();
         await generateTypeDefinitions();
-        
+
         console.log('✅ Rust components built successfully!');
     } catch (error) {
         console.error('❌ Build failed:', error.message);
