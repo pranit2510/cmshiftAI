@@ -279,7 +279,8 @@ export class DesktopMain extends Disposable {
 				activeFileSystemProvider = rustFileSystemProvider;
 
 				// Log success with performance context
-				logService.info('[cmdshiftAI] ✅ RustFileSystemProvider successfully initialized');
+				// allow-any-unicode-next-line
+				logService.info('[cmdshiftAI] RustFileSystemProvider successfully initialized');
 				logService.info('[cmdshiftAI] Expected performance improvements: 2-10x faster file operations');
 
 				// Track successful initialization
@@ -470,6 +471,7 @@ export class DesktopMain extends Disposable {
 		let envFlag: string | undefined;
 		try {
 			// Only access process.env if we're in Node.js context
+			// eslint-disable-next-line no-restricted-globals
 			if (typeof window === 'undefined' && typeof global !== 'undefined' && typeof process !== 'undefined' && process.env) {
 				envFlag = process.env['CMDSHIFT_RUST_FS'];
 			}
@@ -499,7 +501,7 @@ export class DesktopMain extends Disposable {
 	 * cmdshiftAI: Create telemetry service stub for early initialization
 	 */
 	private createTelemetryStub(): ITelemetryService {
-		return {
+		const telemetryStub: ITelemetryService = {
 			publicLog2: () => { },
 			publicLog: () => { },
 			publicLogError: () => { },
@@ -513,7 +515,8 @@ export class DesktopMain extends Disposable {
 			firstSessionDate: '',
 			sendErrorTelemetry: false,
 			_serviceBrand: undefined
-		} as ITelemetryService;
+		};
+		return telemetryStub;
 	}
 
 	/**
@@ -546,6 +549,7 @@ export class DesktopMain extends Disposable {
 			let arch = 'unknown';
 
 			try {
+				// eslint-disable-next-line no-restricted-globals
 				if (typeof window === 'undefined' && typeof global !== 'undefined' && typeof process !== 'undefined' && process.platform && process.arch) {
 					platform = process.platform;
 					arch = process.arch;

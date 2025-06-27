@@ -1,0 +1,146 @@
+{
+  "platform": "darwin arm64",
+  "nodeVersion": "v22.16.0",
+  "timestamp": "2025-06-27T20:31:31.423Z",
+  "tests": {
+    "read_1KB": {
+      "nodeTime": 0.051695875,
+      "rustTime": 0.037192167,
+      "speedup": 1.3899667368131576,
+      "target": 0.1,
+      "passed": true
+    },
+    "read_10KB": {
+      "nodeTime": 0.056469832,
+      "rustTime": 0.039949167999999986,
+      "speedup": 1.413542129337963,
+      "target": 0.2,
+      "passed": true
+    },
+    "read_100KB": {
+      "nodeTime": 0.07354396000000009,
+      "rustTime": 0.050061669999999905,
+      "speedup": 1.4690672524508317,
+      "target": 0.5,
+      "passed": true
+    },
+    "read_1MB": {
+      "nodeTime": 0.18236916000000009,
+      "rustTime": 0.1677924999999999,
+      "speedup": 1.0868731319933858,
+      "target": 1,
+      "passed": true
+    },
+    "read_10MB": {
+      "nodeTime": 1.1370895999999988,
+      "rustTime": 1.4987937500000015,
+      "speedup": 0.7586698303218823,
+      "target": 5,
+      "passed": true
+    },
+    "read_100MB": {
+      "nodeTime": 19.052824999999984,
+      "rustTime": 15.527408400000013,
+      "speedup": 1.2270447526839037,
+      "target": 50,
+      "passed": true
+    },
+    "write_1KB": {
+      "nodeTime": 0.07811583299999995,
+      "rustTime": 0.07397679199999993,
+      "atomicTime": 0.05690304100000003,
+      "speedup": 1.0559505337836226,
+      "passed": false
+    },
+    "write_10KB": {
+      "nodeTime": 0.10186308400000008,
+      "rustTime": 0.08937108399999988,
+      "atomicTime": 0.08922325,
+      "speedup": 1.1397767537428574,
+      "passed": false
+    },
+    "write_100KB": {
+      "nodeTime": 0.0853222900000003,
+      "rustTime": 0.07144833500000004,
+      "atomicTime": 0.06817707999999925,
+      "speedup": 1.1941816418815112,
+      "passed": false
+    },
+    "write_1MB": {
+      "nodeTime": 0.38839291000000004,
+      "rustTime": 0.30106583999999886,
+      "atomicTime": 0.3494391700000006,
+      "speedup": 1.290059709198498,
+      "passed": false
+    },
+    "write_10MB": {
+      "nodeTime": 3.514629149999996,
+      "rustTime": 3.1258937500000004,
+      "atomicTime": 2.942779150000001,
+      "speedup": 1.1243597611083216,
+      "passed": false
+    },
+    "write_100MB": {
+      "nodeTime": 26.512575000000016,
+      "rustTime": 51.32269999999998,
+      "atomicTime": 27.09459160000001,
+      "speedup": 0.5165857408125454,
+      "passed": false
+    },
+    "readdir_10": {
+      "fileCount": 10,
+      "createTime": 2.0191250000002583,
+      "nodeTime": 0.1163339999998243,
+      "rustTime": 2.276459000000159,
+      "speedup": 0.051103050834570785,
+      "passed": false
+    },
+    "readdir_100": {
+      "fileCount": 100,
+      "createTime": 12.529125000000022,
+      "nodeTime": 0.15154200000006313,
+      "rustTime": 0.16520799999989322,
+      "speedup": 0.9172800348661146,
+      "passed": false
+    },
+    "readdir_1000": {
+      "fileCount": 1000,
+      "createTime": 112.05745900000011,
+      "nodeTime": 0.6474160000002485,
+      "rustTime": 0.9399170000001504,
+      "speedup": 0.688801245216487,
+      "passed": false
+    }
+  },
+  "memoryUsage": {
+    "initial": {
+      "rss": 678969344,
+      "heapTotal": 7438336,
+      "heapUsed": 4349216,
+      "external": 117022158,
+      "arrayBuffers": 115399019
+    },
+    "after": {
+      "rss": 1645707264,
+      "heapTotal": 9535488,
+      "heapUsed": 3481240,
+      "external": 1050217846,
+      "arrayBuffers": 18667
+    },
+    "increase": -867976,
+    "target": 157286400,
+    "passed": false
+  },
+  "startup": {
+    "times": [
+      2.243916999999783,
+      0.5397909999996955,
+      0.552375000000211,
+      0.49758399999973335,
+      0.6673329999998714
+    ],
+    "average": 0.9001999999998589,
+    "target": 2000,
+    "passed": true
+  }
+}

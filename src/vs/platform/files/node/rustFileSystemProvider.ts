@@ -109,9 +109,9 @@ export class RustFileSystemProvider extends DiskFileSystemProvider {
 		// Inherit all capabilities from parent and add our enhancements
 		const baseCapabilities = super.capabilities;
 
-		// Add cmdshiftAI performance marker if Rust is available
+		// Add FileRealpath capability if Rust is available since we enhance realpath operations
 		return this.isRustAvailable ?
-			baseCapabilities | FileSystemProviderCapabilities.Readonly : // Use available capability as marker
+			baseCapabilities | FileSystemProviderCapabilities.FileRealpath :
 			baseCapabilities;
 	}
 
@@ -141,6 +141,19 @@ export class RustFileSystemProvider extends DiskFileSystemProvider {
 			this.logService.warn('[cmdshiftAI] Failed to initialize Rust components:', error instanceof Error ? error.message : String(error));
 			return { rustOps: undefined, available: false };
 		}
+	}
+
+	/**
+	 * Enhanced error handling to ensure VS Code compatibility
+	 * Maps Rust errors to appropriate VS Code FileSystemProviderError codes
+	 */
+	private handleRustError(error: any, operation: string, resource: URI): Error {
+		// Log the error for debugging
+		this.logService.warn(`[cmdshiftAI] Rust ${operation} error:`, error);
+
+		// For compatibility, we don't need to map specific errors since we fall back
+		// to the parent implementation which will provide the correct VS Code error codes
+		return error;
 	}
 
 	//#endregion

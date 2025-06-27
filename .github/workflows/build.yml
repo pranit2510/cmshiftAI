@@ -1,0 +1,312 @@
+name: cmdshiftAI Build and Test
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+  release:
+    types: [ created ]
+
+env:
+  CARGO_TERM_COLOR: always
+  NODE_VERSION: '18.x'
+  RUST_TOOLCHAIN: 'stable'
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            platform: linux-x64
+            rust_target: x86_64-unknown-linux-gnu
+          - os: windows-latest
+            platform: win32-x64
+            rust_target: x86_64-pc-windows-msvc
+          - os: macos-latest
+            platform: darwin-x64
+            rust_target: x86_64-apple-darwin
+          - os: macos-latest
+            platform: darwin-arm64
+            rust_target: aarch64-apple-darwin
+    
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+
+    - name: Setup Rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: ${{ env.RUST_TOOLCHAIN }}
+        targets: ${{ matrix.rust_target }}
+        components: rustfmt, clippy
+
+    - name: Cache Rust dependencies
+      uses: Swatinem/rust-cache@v2
+      with:
+        workspaces: rust-components -> target
+
+    - name: Install dependencies
+      run: |
+        npm ci
+        npm run download-builtin-extensions
+
+    - name: Lint Rust code
+      working-directory: rust-components
+      run: |
+        cargo fmt -- --check
+        cargo clippy -- -D warnings
+
+    - name: Build Rust components (Debug)
+      run: npm run rust:build:debug
+
+    - name: Run Rust tests
+      working-directory: rust-components
+      run: cargo test --verbose
+
+    - name: Build TypeScript
+      run: npm run compile
+
+    - name: Run TypeScript tests
+      run: npm test
+      timeout-minutes: 10
+
+    - name: Build Rust components (Release)
+      run: npm run rust:build:release
+
+    - name: Run performance benchmarks
+      run: node scripts/benchmark-file-ops.js
+      if: matrix.os == 'ubuntu-latest'
+      
+    - name: Validate cmdshiftAI
+      run: |
+        chmod +x scripts/validate-cmdshiftai.sh
+        ./scripts/validate-cmdshiftai.sh
+      if: matrix.os != 'windows-latest'
+
+    - name: Validate cmdshiftAI (Windows)
+      run: node scripts/validate-cmdshiftai.js
+      if: matrix.os == 'windows-latest'
+
+    - name: Upload Rust artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: rust-${{ matrix.platform }}
+        path: rust-components/cmdshiftai_core.node
+
+  integration-tests:
+    name: Integration Tests
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+
+    - name: Download Rust artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: rust-linux-x64
+        path: rust-components/
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run integration tests
+      run: npm run test:integration
+      timeout-minutes: 20
+
+    - name: Check memory usage
+      run: |
+        node --expose-gc scripts/memory-test.js
+        
+    - name: Generate test report
+      if: always()
+      run: |
+        npm run test:report || true
+        
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results
+        path: |
+          test-results/
+          coverage/
+
+  package:
+    name: Package Application
+    needs: [build-and-test, integration-tests]
+    if: github.event_name == 'push' || github.event_name == 'release'
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            platform: linux
+          - os: windows-latest
+            platform: win32
+          - os: macos-latest
+            platform: darwin
+    
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+
+    - name: Setup Rust
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Install dependencies
+      run: |
+        npm ci
+        npm run download-builtin-extensions
+
+    - name: Build application
+      run: |
+        npm run rust:build:release
+        npm run compile
+
+    - name: Package for Linux
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        npm run gulp vscode-linux-x64
+        npm run gulp vscode-linux-arm64
+        npm run gulp vscode-linux-armhf
+
+    - name: Package for Windows
+      if: matrix.os == 'windows-latest'
+      run: |
+        npm run gulp vscode-win32-x64
+        npm run gulp vscode-win32-arm64
+
+    - name: Package for macOS
+      if: matrix.os == 'macos-latest'
+      run: |
+        npm run gulp vscode-darwin-x64
+        npm run gulp vscode-darwin-arm64
+        npm run gulp vscode-darwin-universal
+
+    - name: Create archives
+      run: |
+        cd ..
+        tar -czf cmdshiftai-${{ matrix.platform }}-x64.tar.gz VSCode-linux-x64 || true
+        tar -czf cmdshiftai-${{ matrix.platform }}-arm64.tar.gz VSCode-linux-arm64 || true
+        zip -r cmdshiftai-${{ matrix.platform }}-x64.zip VSCode-win32-x64 || true
+        zip -r cmdshiftai-${{ matrix.platform }}-arm64.zip VSCode-win32-arm64 || true
+        tar -czf cmdshiftai-${{ matrix.platform }}-x64.tar.gz VSCode-darwin-x64 || true
+        tar -czf cmdshiftai-${{ matrix.platform }}-arm64.tar.gz VSCode-darwin-arm64 || true
+
+    - name: Upload packages
+      uses: actions/upload-artifact@v4
+      with:
+        name: cmdshiftai-${{ matrix.platform }}-packages
+        path: |
+          ../cmdshiftai-*.tar.gz
+          ../cmdshiftai-*.zip
+
+  release:
+    name: Create Release
+    needs: package
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+
+    - name: Display structure
+      run: ls -la
+
+    - name: Upload Release Assets
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          cmdshiftai-*/cmdshiftai-*.tar.gz
+          cmdshiftai-*/cmdshiftai-*.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  performance-report:
+    name: Performance Report
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+
+    - name: Download Linux artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: rust-linux-x64
+        path: rust-components/
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run full benchmark suite
+      run: |
+        export FULL_BENCHMARK=1
+        node scripts/benchmark-file-ops.js > benchmark-results.txt
+
+    - name: Parse benchmark results
+      id: bench
+      run: |
+        # Extract key metrics from benchmark results
+        STARTUP_TIME=$(grep "Average initialization time:" benchmark-results.txt | grep -oE '[0-9.]+ms' | head -1)
+        MEMORY_USAGE=$(grep "Memory Target:" benchmark-results.txt | grep -oE '[0-9]+MB' | head -1)
+        echo "startup_time=$STARTUP_TIME" >> $GITHUB_OUTPUT
+        echo "memory_usage=$MEMORY_USAGE" >> $GITHUB_OUTPUT
+
+    - name: Comment on PR
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const startup = '${{ steps.bench.outputs.startup_time }}';
+          const memory = '${{ steps.bench.outputs.memory_usage }}';
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `## 📊 Performance Report\n\n- **Startup Time**: ${startup}\n- **Memory Usage**: ${memory}\n\n[View full benchmark results](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`
+          });
+
+    - name: Store benchmark results
+      uses: benchmark-action/github-action-benchmark@v1
+      with:
+        tool: 'customBiggerIsBetter'
+        output-file-path: benchmark-results.txt
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        auto-push: true

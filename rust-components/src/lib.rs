@@ -11,6 +11,9 @@ pub mod search_engine;
 pub mod performance_monitor;
 pub mod ai_orchestrator;
 
+// Re-export performance monitoring
+pub use performance_monitor::{PerformanceMonitor, OperationType, RustPerformanceMetrics};
+
 #[napi]
 pub struct CmdShiftAI;
 
@@ -18,9 +21,6 @@ pub struct CmdShiftAI;
 impl CmdShiftAI {
     #[napi(constructor)]
     pub fn new() -> Self {
-        // Initialize performance monitoring
-        performance_monitor::init();
-        
         CmdShiftAI
     }
 
