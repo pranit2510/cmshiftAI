@@ -358,7 +358,7 @@ export class CodeApplication extends Disposable {
 		};
 
 		const defaultSession = session.defaultSession as unknown as SessionWithCodeCachePathSupport;
-		if (typeof defaultSession.setCodeCachePath === 'function' && this.environmentMainService.codeCachePath) {
+		if (typeof defaultSession.setCodeCachePath === 'function' && this.environmentMainService?.codeCachePath) {
 			// Make sure to partition Chrome's code cache folder
 			// in the same way as our code cache path to help
 			// invalidate caches that we know are invalid

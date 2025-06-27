@@ -470,7 +470,7 @@ export class DesktopMain extends Disposable {
 		let envFlag: string | undefined;
 		try {
 			// Only access process.env if we're in Node.js context
-			if (typeof process !== 'undefined' && process.env) {
+			if (typeof window === 'undefined' && typeof global !== 'undefined' && typeof process !== 'undefined' && process.env) {
 				envFlag = process.env['CMDSHIFT_RUST_FS'];
 			}
 		} catch {
@@ -546,7 +546,7 @@ export class DesktopMain extends Disposable {
 			let arch = 'unknown';
 
 			try {
-				if (typeof process !== 'undefined' && process.platform && process.arch) {
+				if (typeof window === 'undefined' && typeof global !== 'undefined' && typeof process !== 'undefined' && process.platform && process.arch) {
 					platform = process.platform;
 					arch = process.arch;
 				}
