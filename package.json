@@ -1,6 +1,16 @@
 {
   "name": "cmdshiftai",
   "version": "1.0.0",
+  "description": "cmdshiftAI - AI First Code Editor: High-performance development platform with Rust-powered enhancements and AI-first design principles",
+  "keywords": ["code-editor", "ai-first", "rust", "performance", "development", "vscode", "typescript"],
+  "homepage": "https://github.com/pranit2510/cmshiftAI",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pranit2510/cmshiftAI.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pranit2510/cmshiftAI/issues"
+  },
   "distro": "4b888f68839a0c5dc8dd79e00bf18e6670f3cdd7",
   "author": {
     "name": "cmdshiftAI Team"

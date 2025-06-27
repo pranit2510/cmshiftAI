@@ -1,99 +1,231 @@
-# Contributing to VS Code
+# Contributing to cmdshiftAI
 
-Welcome, and thank you for your interest in contributing to VS Code!
+Welcome to cmdshiftAI! We're excited that you're interested in contributing to the AI-first code editor that's revolutionizing development workflows.
 
-There are several ways in which you can contribute, beyond writing code. The goal of this document is to provide a high-level overview of how you can get involved.
+## 🚀 Quick Start
 
-## Asking Questions
+1. **Fork** the repository
+2. **Clone** your fork: `git clone https://github.com/YOUR_USERNAME/cmshiftAI.git`
+3. **Install** dependencies: `npm install`
+4. **Build** Rust components: `npm run rust:build`
+5. **Compile**: `npm run compile`
+6. **Test** your setup: `./scripts/code.sh`
 
+## 🎯 Ways to Contribute
 
-Have a question? Instead of opening an issue, please ask on [Stack Overflow](https://stackoverflow.com/questions/tagged/visual-studio-code) using the tag `visual-studio-code`.
+### 🐛 Bug Reports
+- Use the bug report template when available
+- Include reproduction steps, expected vs actual behavior
+- Add performance metrics if relevant
+- Test with both Rust and Node.js fallback modes
 
-The active community will be eager to assist you. Your well-worded question will serve as a resource to others searching for help.
+### ✨ Feature Requests
+- Use the feature request template when available
+- Explain the use case and expected behavior
+- Consider performance implications
+- Align with AI-first principles
 
-## Providing Feedback
+### 🔧 Code Contributions
+- Performance improvements (our specialty!)
+- Rust component enhancements
+- AI integration features
+- Bug fixes
+- Documentation improvements
 
-Your comments and feedback are welcome, and the development team is available via a handful of different channels.
+## 🏗 Development Setup
 
-See the [Feedback Channels](https://github.com/microsoft/vscode/wiki/Feedback-Channels) wiki page for details on how to share your thoughts.
+### Prerequisites
+- **Node.js** 22.x or higher
+- **Rust** 1.70+ with cargo
+- **Git**
+- **Python** 3.x (for some build tools)
 
-## Reporting Issues
+### Environment Setup
 
-Have you identified a reproducible problem in VS Code? Do you have a feature request? We want to hear about it! Here's how you can report your issue as effectively as possible.
+```bash
+# Clone and setup
+git clone https://github.com/pranit2510/cmshiftAI.git
+cd cmshiftAI
 
-### Identify Where to Report
+# Install dependencies
+npm install
 
-The VS Code project is distributed across multiple repositories. Try to file the issue against the correct repository. Check the list of [Related Projects](https://github.com/microsoft/vscode/wiki/Related-Projects) if you aren't sure which repo is correct.
+# Build Rust components
+npm run rust:build:debug
 
-Can you recreate the issue even after [disabling all extensions](https://code.visualstudio.com/docs/editor/extension-gallery#_disable-an-extension)? If you find the issue is caused by an extension you have installed, please file an issue on the extension's repo directly.
+# Start development watch mode
+npm run watch
 
-### Look For an Existing Issue
+# In another terminal, launch cmdshiftAI
+export VSCODE_DEV=1
+./scripts/code.sh
+```
 
-Before you create a new issue, please do a search in [open issues](https://github.com/microsoft/vscode/issues) to see if the issue or feature request has already been filed.
+## 📋 Development Guidelines
 
-Be sure to scan through the [most popular](https://github.com/microsoft/vscode/issues?q=is%3Aopen+is%3Aissue+label%3Afeature-request+sort%3Areactions-%2B1-desc) feature requests.
+### 🦀 Rust Components
 
-If you find your issue already exists, make relevant comments and add your [reaction](https://github.com/blog/2119-add-reactions-to-pull-requests-issues-and-comments). Use a reaction in place of a "+1" comment:
+**Performance Requirements:**
+- All Rust operations must be async (use tokio)
+- Target specific performance improvements:
+  - File reads: 10x improvement
+  - File writes: 5x improvement
+  - Directory scans: 10x improvement
+- Memory overhead <5MB for Rust components
 
-* 👍 - upvote
-* 👎 - downvote
+### 📝 TypeScript Components
 
-If you cannot find an existing issue that describes your bug or feature, create a new issue using the guidelines below.
+**Mandatory Fallback Pattern:**
+```typescript
+// Always implement fallback pattern
+async performOperation(input: string): Promise<Result> {
+    if (this.rustBridge?.isAvailable()) {
+        try {
+            const result = await this.rustBridge.operation(input);
+            this.telemetryService.log('rust.success', { op: 'operation' });
+            return result;
+        } catch (e) {
+            this.logService.warn('Rust operation failed, using fallback', e);
+            this.telemetryService.log('rust.fallback', { op: 'operation' });
+        }
+    }
+    return this.nodeImplementation(input);
+}
+```
 
-### Writing Good Bug Reports and Feature Requests
+**Requirements:**
+- Use strict TypeScript mode
+- No `any` types allowed
+- Import types from VS Code interfaces
+- Use VS Code's dependency injection
+- Comprehensive error handling
 
-File a single issue per problem and feature request. Do not enumerate multiple bugs or feature requests in the same issue.
+### 🎨 Code Style
 
-Do not add your issue as a comment to an existing issue unless it's for the identical input. Many issues look similar but have different causes.
+**Git Commit Standards:**
+```
+type(scope): message
 
-The more information you can provide, the more likely someone will be successful at reproducing the issue and finding a fix.
+Types:
+- feat: New feature
+- perf: Performance improvement
+- fix: Bug fix
+- refactor: Code restructuring
+- test: Test additions/changes
+- docs: Documentation updates
+- build: Build system changes
 
-The built-in tool for reporting an issue, which you can access by using `Report Issue` in VS Code's Help menu, can help streamline this process by automatically providing the version of VS Code, all your installed extensions, and your system info. Additionally, the tool will search among existing issues to see if a similar issue already exists.
+Example: perf(files): implement Rust-based file operations for 10x speed
+```
 
-Please include the following with each issue:
+## 🧪 Testing
 
-* Version of VS Code
-* Your operating system
-* List of extensions that you have installed
-* Reproducible steps (1... 2... 3...) that cause the issue
-* What you expected to see, versus what you actually saw
-* Images, animations, or a link to a video showing the issue occurring
-* A code snippet that demonstrates the issue or a link to a code repository the developers can easily pull down to recreate the issue locally
-  * **Note:** Because the developers need to copy and paste the code snippet, including a code snippet as a media file (i.e. .gif) is not sufficient.
-* Errors from the Dev Tools Console (open from the menu: Help > Toggle Developer Tools)
+### Running Tests
 
-### Creating Pull Requests
+```bash
+# Unit tests
+npm run test-node
 
-* Please refer to the article on [creating pull requests](https://github.com/microsoft/vscode/wiki/How-to-Contribute#pull-requests) and contributing to this project.
+# Browser tests
+npm run test-browser
 
-### Final Checklist
+# Performance benchmarks
+node scripts/validate-performance.js
 
-Please remember to do the following:
+# Rust integration tests
+node scripts/validate-rust-integration.js
+```
 
-* [ ] Search the issue repository to ensure your report is a new issue
-* [ ] Recreate the issue after disabling all extensions
-* [ ] Simplify your code around the issue to better isolate the problem
+## 🚦 Pull Request Process
 
-Don't feel bad if the developers can't reproduce the issue right away. They will simply ask for more information!
+### Before Submitting
 
-### Follow Your Issue
+1. **Test thoroughly**:
+   ```bash
+   npm run compile
+   npm run test-node
+   node scripts/validate-performance.js
+   ```
 
-Once submitted, your report will go into the [issue tracking](https://github.com/microsoft/vscode/wiki/Issue-Tracking) workflow. Be sure to understand what will happen next, so you know what to expect and how to continue to assist throughout the process.
+2. **Performance validation**:
+   - Run benchmarks: `node scripts/validate-performance.js`
+   - Ensure no performance regressions
+   - Document performance improvements
 
-## Automated Issue Management
+### PR Requirements
 
-We use GitHub Actions to help us manage issues. These Actions and their descriptions can be [viewed here](https://github.com/microsoft/vscode-github-triage-actions). Some examples of what these Actions do are:
+- [ ] **Clear description** of changes and motivation
+- [ ] **Performance benchmarks** if applicable
+- [ ] **Tests added/updated** for new functionality
+- [ ] **Documentation updated** if needed
+- [ ] **Breaking changes documented**
+- [ ] **Follows commit message format**
 
-* Automatically close any issue marked `info-needed` if there has been no response in the past 7 days.
-* Automatically lock issues 45 days after they are closed.
-* Automatically implement the VS Code [feature request pipeline](https://github.com/microsoft/vscode/wiki/Issues-Triaging#managing-feature-requests).
+## 🎯 Performance Focus Areas
 
-If you believe the bot got something wrong, please open a new issue and let us know.
+### High-Priority Improvements
+- **File I/O operations** (current focus)
+- **Search and indexing** (next milestone)
+- **Memory optimization** (ongoing)
+- **Startup time** (continuous improvement)
 
-## Contributing Fixes
+### Benchmarking
+- Always compare against VS Code baseline
+- Use consistent test environments
+- Document hardware specifications
+- Measure real-world scenarios
 
-If you are interested in writing code to fix issues, please see [How to Contribute](https://github.com/microsoft/vscode/wiki/How-to-Contribute) in the wiki.
+## 🤖 AI Integration Guidelines
 
-## Thank You
+### MCP Protocol
+- Follow Model Context Protocol standards
+- Implement context-aware features
+- Maintain privacy and security
+- Document AI capabilities
 
-Your contributions to open source, large or small, make great projects like this possible. Thank you for taking the time to contribute.
+### AI-First Principles
+- Intelligent defaults over configuration
+- Context-aware suggestions
+- Proactive assistance
+- Learning from user patterns
+
+## 📚 Resources
+
+### Documentation
+- [Architecture Overview](docs/ARCHITECTURE.md)
+- [Rust Integration Guide](docs/RUST_INTEGRATION.md)
+- [Performance Guidelines](docs/PERFORMANCE.md)
+
+### Community
+- [GitHub Discussions](https://github.com/pranit2510/cmshiftAI/discussions)
+- [GitHub Issues](https://github.com/pranit2510/cmshiftAI/issues)
+
+## 🆘 Getting Help
+
+### Development Issues
+1. Check [existing issues](https://github.com/pranit2510/cmshiftAI/issues)
+2. Search [discussions](https://github.com/pranit2510/cmshiftAI/discussions)
+3. Create a new issue with detailed information
+
+### Performance Questions
+- Include benchmark results
+- Specify hardware configuration
+- Provide reproduction steps
+- Compare with VS Code baseline
+
+## 🙏 Recognition
+
+Contributors are recognized in:
+- Release notes
+- Contributors section in README
+- Special recognition for significant contributions
+
+---
+
+**Thank you for contributing to cmdshiftAI!** Together, we're building the future of AI-first development tools.
+
+<div align="center">
+
+Made with ❤️ by the cmdshiftAI Community
+
+</div>
